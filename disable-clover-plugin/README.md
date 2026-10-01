@@ -8,6 +8,7 @@ How to stop the **Clover Security - Kura** plugin (`clover@clover-security`) fro
 | --- | --- |
 | `settings.json` | Project setting that turns the plugin off. Goes in `<your folder>/.claude/settings.json`. |
 | `claude-wrapper.zsh` | zsh function that applies that setting in subfolders too. Goes in `~/.zshrc`. |
+| `test-wrapper.zsh` | Self-check for the function: `zsh test-wrapper.zsh` prints `ok`. |
 
 ## Why you need both
 
@@ -61,16 +62,29 @@ That only works when you start Claude in the folder that contains `.claude/`. Su
 
 ```zsh
 claude() {
-  case "$PWD/" in
-    "$CLOVER_OFF_DIR/"*) command claude --settings "$CLOVER_OFF_DIR/.claude/settings.json" "$@" ;;
-    *) command claude "$@" ;;
-  esac
+  if [[ -n "$CLOVER_OFF_DIR" && -f "$CLOVER_OFF_DIR/.claude/settings.json" && "$PWD/" == "$CLOVER_OFF_DIR/"* ]]; then
+    command claude --settings "$CLOVER_OFF_DIR/.claude/settings.json" "$@"
+  else
+    command claude "$@"
+  fi
 }
 ```
 
-- Inside the folder or anything below it, it starts Claude with `--settings` pointing at the folder's settings file.
-- Anywhere else, it runs `claude` unchanged. `command` calls the real program instead of the function again.
-- The trailing `/` on both sides makes the folder itself match, and keeps folders with similar names (like `~/cloverPOVs-old`) from matching.
+- Inside the folder or anything below it, the function starts Claude with `--settings` pointing at the folder's settings file.
+- Anywhere else, it runs `claude` unchanged. `command` calls the real program instead of calling the function again.
+- The trailing `/` on both sides does two things: the folder itself matches, and folders with similar names (like `~/cloverPOVs-old`) don't.
+- **Guards:** if `CLOVER_OFF_DIR` is empty, or the settings file is missing, it runs `claude` unchanged.
+  - The first version had no guard. An empty variable turned the pattern into `/*`, which matches every folder, so Claude failed everywhere with `Settings file not found: /.claude/settings.json`.
+  - That happens when a tool snapshots your shell functions without their variables, as Claude Code's own Bash tool does.
+
+**Test it:** `zsh test-wrapper.zsh` runs the function against a fake `claude` in temporary folders and prints `ok`. It covers:
+- the folder and a subfolder;
+- a folder with a similar name;
+- a folder outside;
+- an empty `CLOVER_OFF_DIR`;
+- a missing settings file.
+
+**Upgrading from the first version:** replace the old function in `~/.zshrc` instead of appending. Running `cat … >> ~/.zshrc` twice leaves two copies, and the last one wins. `grep -n 'claude() {' ~/.zshrc` should print exactly one line.
 
 ## Limits
 
