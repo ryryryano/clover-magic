@@ -26,7 +26,7 @@ That only works when you start Claude in the folder that contains `.claude/`. Su
 | Started from | Plugin status |
 | --- | --- |
 | `~/cloverPOVs` | ✘ disabled |
-| `~/cloverPOVs/Alpaca` | ✔ **enabled** |
+| `~/cloverPOVs/prospect1` | ✔ **enabled** |
 
 `claude --settings <file>` does apply from a subfolder, so the zsh function adds that flag whenever you start Claude anywhere under the folder.
 
