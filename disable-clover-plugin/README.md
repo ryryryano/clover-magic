@@ -92,6 +92,23 @@ claude() {
 - **Check the plugin ID.** Run `claude plugin list` to confirm yours is `clover@clover-security`. Other Clover plugins (`clover-for-developers`, `clover-for-security-teams`) have their own IDs and need their own `false` entries.
 - **Admin policy.** The plugin may be installed through managed (organization) settings. Turning it off this way worked for us, but if your admin locks it on, a project setting can't override that.
 
+## Resume a session that was started somewhere else
+
+You can't turn a plugin off in a session that's already running. Plugins and their hooks load when Claude starts.
+
+`claude --continue` resumes the latest session *from the folder you're in*, and the function only turns the plugin off inside your folder. So for a session you started elsewhere (e.g. `~/projects`), go back to that folder and pass the setting yourself:
+
+```sh
+cd ~/projects    # the folder the session was started from
+command claude --settings ~/cloverPOVs/.claude/settings.json --continue
+```
+
+- `command` skips the function.
+- `--settings` turns the plugin off for the whole session, whatever folder its files live in.
+- To pick a specific older session instead of the latest, use `--resume` in place of `--continue`.
+
+To check it worked, run `/plugin` inside Claude. `clover@clover-security` should show as disabled.
+
 ## Undo
 
 Delete the function from `~/.zshrc`, delete the `enabledPlugins` entry from `.claude/settings.json`, and open a new terminal.
