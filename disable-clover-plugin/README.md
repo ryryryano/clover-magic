@@ -36,11 +36,12 @@ That only works when you start Claude in the folder that contains `.claude/`. Su
 1. **Add the project setting.** Copy `settings.json` into each folder (here `~/cloverPOVs`; repeat for every folder you list in step 2):
 
    ```sh
-   mkdir -p ~/cloverPOVs/.claude
-   cp settings.json ~/cloverPOVs/.claude/settings.json
+   f=~/cloverPOVs/.claude/settings.json
+   mkdir -p "${f:h}"; [[ -f $f ]] || echo '{}' > "$f"
+   jq '.enabledPlugins["clover@clover-security"] = false' "$f" > "$f.tmp" && mv "$f.tmp" "$f"
    ```
 
-   If `.claude/settings.json` already exists, merge the `enabledPlugins` entry into it instead of overwriting.
+   This merges: an existing `settings.json` keeps its other settings, and only this one entry is added. If there's no file, it creates one. (`settings.json` in this repo shows the result for an empty folder.)
 
 2. **Add the zsh function.** In `claude-wrapper.zsh`, list your folders in `CLOVER_OFF_DIRS`, for example `CLOVER_OFF_DIRS=("$HOME/cloverPOVs" "$HOME/claudeCode")`. Then add it to `~/.zshrc`:
 
