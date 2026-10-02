@@ -33,7 +33,7 @@ That only works when you start Claude in the folder that contains `.claude/`. Su
 
 ## Setup
 
-1. **Add the project setting.** Copy `settings.json` into each folder (here `~/cloverPOVs`; repeat for every folder you list in step 2):
+1. **Add the project setting** to each folder (here `~/cloverPOVs`; repeat for every folder you list in step 2):
 
    ```sh
    f=~/cloverPOVs/.claude/settings.json
