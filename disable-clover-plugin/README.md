@@ -1,6 +1,6 @@
-# Turn off the Clover plugin for one folder
+# Turn off the Clover plugin for chosen folders
 
-How to stop the **Clover Security - Kura** plugin (`clover@clover-security`) from running in Claude Code inside one folder and every folder under it, including folders created later. It keeps running everywhere else.
+How to stop the **Clover Security - Kura** plugin (`clover@clover-security`) from running in Claude Code inside the folders you choose and every folder under them, including folders created later. It keeps running everywhere else.
 
 ## Files
 
@@ -33,7 +33,7 @@ That only works when you start Claude in the folder that contains `.claude/`. Su
 
 ## Setup
 
-1. **Add the project setting.** Copy `settings.json` into your folder:
+1. **Add the project setting.** Copy `settings.json` into each folder (here `~/cloverPOVs`; repeat for every folder you list in step 2):
 
    ```sh
    mkdir -p ~/cloverPOVs/.claude
@@ -42,7 +42,7 @@ That only works when you start Claude in the folder that contains `.claude/`. Su
 
    If `.claude/settings.json` already exists, merge the `enabledPlugins` entry into it instead of overwriting.
 
-2. **Add the zsh function.** Change `CLOVER_OFF_DIR` in `claude-wrapper.zsh` to your folder, then add it to `~/.zshrc`:
+2. **Add the zsh function.** In `claude-wrapper.zsh`, list your folders in `CLOVER_OFF_DIRS`, for example `CLOVER_OFF_DIRS=("$HOME/cloverPOVs" "$HOME/claudeCode")`. Then add it to `~/.zshrc`:
 
    ```sh
    cat claude-wrapper.zsh >> ~/.zshrc
@@ -61,30 +61,36 @@ That only works when you start Claude in the folder that contains `.claude/`. Su
 ## How the function works
 
 ```zsh
+CLOVER_OFF_DIRS=("$HOME/cloverPOVs" "$HOME/claudeCode")
+
 claude() {
-  if [[ -n "$CLOVER_OFF_DIR" && -f "$CLOVER_OFF_DIR/.claude/settings.json" && "$PWD/" == "$CLOVER_OFF_DIR/"* ]]; then
-    command claude --settings "$CLOVER_OFF_DIR/.claude/settings.json" "$@"
-  else
-    command claude "$@"
-  fi
+  local d
+  for d in "${CLOVER_OFF_DIRS[@]}" "$CLOVER_OFF_DIR"; do
+    if [[ -n "$d" && -f "$d/.claude/settings.json" && "$PWD/" == "$d/"* ]]; then
+      command claude --settings "$d/.claude/settings.json" "$@"
+      return
+    fi
+  done
+  command claude "$@"
 }
 ```
 
-- Inside the folder or anything below it, the function starts Claude with `--settings` pointing at the folder's settings file.
+- Inside a listed folder or anything below it, the function starts Claude with `--settings` pointing at **that folder's own** settings file. Folders can therefore carry different settings, such as hooks that only make sense in one of them.
 - Anywhere else, it runs `claude` unchanged. `command` calls the real program instead of calling the function again.
+- If folders are nested, list the inner one first, because the first match wins.
 - The trailing `/` on both sides does two things: the folder itself matches, and folders with similar names (like `~/cloverPOVs-old`) don't.
-- **Guards:** if `CLOVER_OFF_DIR` is empty, or the settings file is missing, it runs `claude` unchanged.
+- **Guards:** an empty entry, or a folder with no `.claude/settings.json`, is skipped, and Claude runs unchanged.
   - The first version had no guard. An empty variable turned the pattern into `/*`, which matches every folder, so Claude failed everywhere with `Settings file not found: /.claude/settings.json`.
   - That happens when a tool snapshots your shell functions without their variables, as Claude Code's own Bash tool does.
+- `CLOVER_OFF_DIR` (one folder, used by older versions) still works alongside the list.
 
 **Test it:** `zsh test-wrapper.zsh` runs the function against a fake `claude` in temporary folders and prints `ok`. It covers:
-- the folder and a subfolder;
-- a folder with a similar name;
-- a folder outside;
-- an empty `CLOVER_OFF_DIR`;
-- a missing settings file.
+- two listed folders, each using its own settings file, plus their subfolders;
+- a folder with a similar name, and a folder outside;
+- an empty entry, an empty list, and a folder with no settings file;
+- the old single `CLOVER_OFF_DIR` variable.
 
-**Upgrading from the first version:** replace the old function in `~/.zshrc` instead of appending. Running `cat … >> ~/.zshrc` twice leaves two copies, and the last one wins. `grep -n 'claude() {' ~/.zshrc` should print exactly one line.
+**Upgrading from an older version:** replace the old `CLOVER_OFF_DIR=` line and function in `~/.zshrc` instead of appending. Running `cat … >> ~/.zshrc` twice leaves two copies, and the last one wins. `grep -n 'claude() {' ~/.zshrc` should print exactly one line.
 
 ## Limits
 
