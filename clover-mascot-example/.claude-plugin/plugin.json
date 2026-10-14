@@ -1,0 +1,6 @@
+{
+  "name": "clover-mascot-example",
+  "version": "0.1.0",
+  "description": "A pixel clover mascot animated in a pane (/clover-mascot-example)",
+  "types": "./types/index.d.ts"
+}
