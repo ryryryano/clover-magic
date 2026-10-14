@@ -2,6 +2,14 @@
 
 A Claude Code mod that opens a pane where Claude's mascot juggles three shamrocks. Under the animation it reads **Claude loves Clover Security · 8-bit** (or 16-bit or 32-bit, whichever style is showing).
 
+## What it looks like
+
+| 8-bit | 16-bit |
+| --- | --- |
+| ![8-bit style](examples/8bit.gif) | ![16-bit style](examples/16bit.gif) |
+| **32-bit (kawaii)** | **ASCII** |
+| ![32-bit kawaii style](examples/32bit.gif) | ![ASCII style](examples/ascii.gif) |
+
 ## Files
 
 | File | What it does |
@@ -12,6 +20,7 @@ A Claude Code mod that opens a pane where Claude's mascot juggles three shamrock
 | `hooks/pixels.ts` | Pixel art for the 8-bit, 16-bit and 32-bit styles. |
 | `hooks/frames.ts` | ASCII frames. |
 | `types/index.d.ts` | Types for the mod's saved state. |
+| `examples/*.gif` | Screen recordings of each style, shown above. |
 | `tests/juggler.test.tsx` | Tests: shamrocks stay in the sky, every style renders, the command toggles. |
 
 ## Set up
