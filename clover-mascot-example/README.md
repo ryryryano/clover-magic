@@ -4,6 +4,12 @@ A Claude Code mod that opens a pane where two pixel-art clover mascots play side
 
 It's also a worked example of turning your own GIFs into a mod: drop them in `assets/`, run the build script, and the pane plays them.
 
+## What it looks like
+
+| Idea | Send |
+| --- | --- |
+| ![Idea: the clover has a lightbulb moment](examples/idea.gif) | ![Send: the clover throws a paper airplane](examples/send.gif) |
+
 ## Files
 
 | File | What it does |
@@ -14,6 +20,7 @@ It's also a worked example of turning your own GIFs into a mod: drop them in `as
 | `hooks/pixels.ts` | Turns a frame into rows of half blocks (two pixels per cell). |
 | `hooks/clips.ts` | The frames, generated from the GIFs. Don't edit by hand. |
 | `assets/idea.gif`, `assets/send.gif` | The source animations. |
+| `examples/*.gif` | Screen recordings of the pane, shown above. |
 | `tools/build_frames.py` | Rebuilds `hooks/clips.ts` from the GIFs. |
 | `types/index.d.ts` | Types for the mod's saved state. |
 | `tests/clover.test.tsx` | Tests: every frame is whole and uses the palette, both clips show side by side, the command toggles. |
