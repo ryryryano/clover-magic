@@ -1,0 +1,6 @@
+{
+  "name": "shamrock-juggler",
+  "version": "0.1.0",
+  "description": "Claude's mascot juggling shamrocks in a pane (/shamrocks)",
+  "types": "./types/index.d.ts"
+}

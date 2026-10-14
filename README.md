@@ -7,6 +7,7 @@ Helpful tips and tricks for using Clover. Each one is in its own folder, with a 
 | Tip | What it does |
 | --- | --- |
 | [disable-clover-plugin](disable-clover-plugin/) | Turn off the Clover Security - Kura plugin in Claude Code for one folder and everything under it. |
+| [shamrock-juggler](shamrock-juggler/) | `/shamrocks` opens a pane where Claude juggles shamrocks. Styles: 8-bit, 16-bit, 32-bit and ASCII. |
 
 ## Adding a tip
 
